@@ -1,10 +1,19 @@
+/* eslint-disable no-unused-vars */
+import { useState } from "react";
 import BottomWarning from "../comps/BottomWarning";
 import Button from "../comps/Button";
 import Heading from "../comps/Heading";
 import InputBox from "../comps/InputBox";
 import Subheading from "../comps/Subheading";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import useRedirectIfAuthenticated from "../hook/useRedirect";
 
 export default function SignIn() {
+  useRedirectIfAuthenticated();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
   return (
     <div className="flex justify-center items-center min-h-screen bg-primary">
       <div className="bg-white p-6 rounded-lg shadow-md">
@@ -14,10 +23,33 @@ export default function SignIn() {
           title={"Email"}
           placeholder={"nZUeh@example.com"}
           type={"text"}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        <InputBox title="Password" placeholder={"********"} type={"password"} />
+        <InputBox
+          title="Password"
+          placeholder={"********"}
+          type={"password"}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <div className="flex justify-center">
-          <Button>Sign In</Button>
+          <Button
+            onClick={() => {
+              axios
+                .post("http://localhost:5000/api/v1/user/signin", {
+                  email,
+                  password,
+                })
+                .then((res) => {
+                  localStorage.setItem("token", res.data.token);
+                  navigate("/dashboard");
+                })
+                .catch((err) => {
+                  console.log(err.message);
+                });
+            }}
+          >
+            Sign In
+          </Button>
         </div>
         <BottomWarning
           label={"Don't have an account? "}

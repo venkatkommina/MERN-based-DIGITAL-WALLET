@@ -47,11 +47,21 @@ router.post("/signup", async (req, res) => {
 
     await account.save();
 
+    const token = jwt.sign(
+      {
+        email: user.email,
+        id: user._id,
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "30d" }
+    );
+
     res.status(201).json({
       message: "User created successfully and initialized balance succesfully",
       userId: user._id,
       balance,
       email: user.email,
+      token,
     });
   } catch (e) {
     res.status(500).json({ message: e.message });
@@ -75,7 +85,7 @@ router.post("/signin", async (req, res) => {
     const token = jwt.sign(
       { email: user.email, id: user._id },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "30d" }
     );
 
     res.status(200).json({ email: user.email, userId: user._id, token });
@@ -84,7 +94,7 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-router.get("/bulk", async (req, res) => {
+router.get("/bulk", authMiddleware, async (req, res) => {
   const filter = req.query.filter || "";
 
   const users = await User.find({
@@ -112,7 +122,17 @@ router.get("/bulk", async (req, res) => {
       lastName: user.lastName,
       _id: user._id,
     })),
+    userId: req.userId,
   });
+});
+
+router.get("/me", authMiddleware, async (req, res) => {
+  const user = await User.findOne({ _id: req.userId });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  res.status(200).json({ user });
 });
 
 router.put("/", authMiddleware, async (req, res) => {

@@ -2,8 +2,22 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-export const Appbar = function ({ firstName }) {
+export const Appbar = function () {
+  const [firstName, setFirstName] = useState("");
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/v1/user/me", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        setFirstName(res.data.user.firstName);
+      });
+  }, [firstName]);
   return (
     <div className="shadow h-16 flex justify-between bg-white">
       <div className="flex items-center h-full ml-20 font-bold font-serif text-2xl text-tertiary">

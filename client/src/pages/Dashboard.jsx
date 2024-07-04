@@ -7,7 +7,7 @@ export default function Dashboard() {
     <div className="min-h-screen">
       <Appbar firstName={"Venkat"} />
       <div className="h-full my-6">
-        <Balance balance={1000} />
+        <Balance />
       </div>
       <Users />
     </div>
