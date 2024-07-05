@@ -1,4 +1,4 @@
-# Paytm MERN Project
+# MERN based DIGITAL WALLET Project
 
 ## Project Description
 This project is a Paytm-like application built using the MERN stack (MongoDB, Express, React, Node.js). The application includes user authentication, profile management, and money transfer functionalities.
